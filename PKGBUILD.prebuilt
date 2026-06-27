@@ -1,0 +1,61 @@
+# Maintainer: AstralSightStudios <dev@astralsight.studio>
+# 使用预编译二进制文件打包（跳过编译）
+
+pkgname=astrobox-ng
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
+arch=('x86_64')
+url="https://github.com/AstralSightStudios/AstroBox-NG"
+license=('AGPL-3.0')
+depends=(
+    'webkit2gtk-4.1'
+    'gtk3'
+    'libx11'
+    'gcc-libs'
+    'glibc'
+    'zlib'
+    'bzip2'
+    'libxcb'
+    'libxkbcommon'
+    'dbus'
+    'libsecret'
+    'libsoup3'
+    'gstreamer'
+    'gst-plugins-base'
+    'libepoxy'
+    'atk'
+    'at-spi2-core'
+    'cairo'
+    'pango'
+    'gdk-pixbuf2'
+    'harfbuzz'
+    'hicolor-icon-theme'
+    'desktop-file-utils'
+    'shared-mime-info'
+)
+source=()
+sha256sums=()
+
+# 使用预编译的二进制文件路径（通过环境变量传入）
+PREBUILT_DIR="${PREBUILT_DIR:-}"
+
+package() {
+    if [ -z "$PREBUILT_DIR" ]; then
+        echo "错误：需要设置 PREBUILT_DIR 环境变量指向预编译目录"
+        echo "用法：PREBUILT_DIR=/path/to/release makepkg"
+        exit 1
+    fi
+    
+    # Binary
+    install -Dm755 "$PREBUILT_DIR/AstroBox-ng" "$pkgdir/usr/bin/AstroBox-ng"
+    
+    # Desktop file
+    install -Dm644 "$PREBUILT_DIR/bundle/deb/AstroBox_2.0.0_amd64/data/usr/share/applications/AstroBox.desktop" "$pkgdir/usr/share/applications/AstroBox.desktop"
+    
+    # Icon
+    install -Dm644 "$PREBUILT_DIR/../../modules/app/icons/icon.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-NG.png"
+    
+    # License
+    install -Dm644 "$PREBUILT_DIR/../../../LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

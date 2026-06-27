@@ -63,13 +63,13 @@ package() {
     cd "$srcdir/AstroBox-NG/src-tauri/target/release"
 
     # Binary
-    install -Dm755 AstroBox "$pkgdir/usr/bin/AstroBox"
+    install -Dm755 AstroBox-ng "$pkgdir/usr/bin/AstroBox-ng"
 
     # Desktop file
-    install -Dm644 bundle/deb/AstroBox.desktop "$pkgdir/usr/share/applications/AstroBox.desktop"
+    install -Dm644 bundle/deb/AstroBox_2.0.0_amd64/data/usr/share/applications/AstroBox.desktop "$pkgdir/usr/share/applications/AstroBox.desktop"
 
     # Icon
-    install -Dm644 ../../modules/app/icons/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox.png"
+    install -Dm644 ../../modules/app/icons/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-ng.png"
 
     # License
     install -Dm644 "$srcdir/AstroBox-NG/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
