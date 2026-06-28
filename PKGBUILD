@@ -33,10 +33,28 @@ depends=(
     'desktop-file-utils'
     'shared-mime-info'
 )
-source=("${url}/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst")
+
+# CDN mirror support
+# Usage: MIRROR=ghfast makepkg -s
+# Supported: direct (default), ghfast, ghproxy, ghproxy2, ghgo, ghddl
+_mirror="${MIRROR:-direct}"
+_base_path="AstralSightStudios/AstroBox-NG/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
+
+case "$_mirror" in
+    direct)   _url="https://github.com/${_base_path}" ;;
+    ghfast)   _url="https://ghfast.top/https://github.com/${_base_path}" ;;
+    ghproxy)  _url="https://ghproxy.com/https://github.com/${_base_path}" ;;
+    ghproxy2) _url="https://gh-proxy.com/https://github.com/${_base_path}" ;;
+    ghgo)     _url="https://ghgo.xyz/https://github.com/${_base_path}" ;;
+    ghddl)    _url="https://gh.ddlc.top/https://github.com/${_base_path}" ;;
+    *)        _url="https://github.com/${_base_path}" ;;
+esac
+
+source=("$_url")
 sha256sums=('52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63')
 
 package() {
     cd "$srcdir"
+    rm -f .BUILDINFO .MTREE .PKGINFO
     cp -a . "$pkgdir"
 }
