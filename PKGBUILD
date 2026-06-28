@@ -1,4 +1,4 @@
-# Maintainer: AstralSightStudios <dev@astralsight.studio>
+# Maintainer: WaiJade <waijade@outlook.com>
 
 pkgname=astrobox-ng
 pkgver=2.0.0
