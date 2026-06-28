@@ -7,6 +7,7 @@ pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
 arch=('x86_64')
 url="https://github.com/AstralSightStudios/AstroBox-NG"
 license=('AGPL-3.0')
+options=('!debug')
 depends=(
     'webkit2gtk-4.1'
     'gtk3'

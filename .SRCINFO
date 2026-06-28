@@ -30,5 +30,6 @@ pkgbase = astrobox-ng
 	depends = hicolor-icon-theme
 	depends = desktop-file-utils
 	depends = shared-mime-info
+	options = !debug
 
 pkgname = astrobox-ng
