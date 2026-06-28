@@ -29,7 +29,6 @@ pkgbase = astrobox-ng
 	depends = hicolor-icon-theme
 	depends = desktop-file-utils
 	depends = shared-mime-info
-	source = https://github.com/AstralSightStudios/AstroBox-NG/releases/download/2.0.0/AstroBox_2.0.0_x86_64.pkg.tar.zst
 	sha256sums = 52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63
 
 pkgname = astrobox-ng

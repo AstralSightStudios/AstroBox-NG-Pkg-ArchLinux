@@ -33,26 +33,59 @@ depends=(
     'desktop-file-utils'
     'shared-mime-info'
 )
-
-# CDN mirror support
-# Usage: MIRROR=ghfast makepkg -s
-# Supported: direct (default), ghfast, ghproxy, ghproxy2, ghproxy3, ghgo, ghddl
-_mirror="${MIRROR:-direct}"
-_base_path="AstralSightStudios/AstroBox-NG/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
-
-case "$_mirror" in
-    direct)   _url="https://github.com/${_base_path}" ;;
-    ghfast)   _url="https://ghfast.top/https://github.com/${_base_path}" ;;
-    ghproxy)  _url="https://ghproxy.com/https://github.com/${_base_path}" ;;
-    ghproxy2) _url="https://gh-proxy.com/https://github.com/${_base_path}" ;;
-    ghgo)     _url="https://ghgo.xyz/https://github.com/${_base_path}" ;;
-    ghproxy3) _url="https://ghproxy.net/https://github.com/${_base_path}" ;;
-    ghddl)    _url="https://gh.ddlc.top/https://github.com/${_base_path}" ;;
-    *)        _url="https://github.com/${_base_path}" ;;
-esac
-
-source=("$_url")
+source=()
 sha256sums=('52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63')
+
+prepare() {
+    local _base="AstralSightStudios/AstroBox-NG/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
+    local _file="AstroBox_${pkgver}_x86_64.pkg.tar.zst"
+    local _mirrors=(
+        "https://github.com/${_base}|GitHub"
+        "https://ghfast.top/https://github.com/${_base}|ghfast"
+        "https://ghproxy.com/https://github.com/${_base}|ghproxy"
+        "https://gh-proxy.com/https://github.com/${_base}|ghproxy2"
+        "https://ghproxy.net/https://github.com/${_base}|ghproxy3"
+        "https://ghgo.xyz/https://github.com/${_base}|ghgo"
+        "https://gh.ddlc.top/https://github.com/${_base}|ghddl"
+    )
+
+    echo "==> Testing download mirrors..."
+    local _best_url="" _best_time="999" _best_name=""
+
+    for _entry in "${_mirrors[@]}"; do
+        local _url="${_entry%%|*}"
+        local _name="${_entry##*|}"
+        local _time
+        _time=$(curl -sI --max-time 5 -o /dev/null -w "%{time_total}" "$_url" 2>/dev/null) || true
+        local _code
+        _code=$(curl -sI --max-time 5 -o /dev/null -w "%{http_code}" "$_url" 2>/dev/null) || true
+        if [[ "$_code" =~ ^(200|301|302) ]]; then
+            printf "    %-12s %ss (%s)\n" "$_name" "$_time" "$_code"
+            if awk "BEGIN{exit !($_time < $_best_time)}" 2>/dev/null; then
+                _best_time="$_time"
+                _best_url="$_url"
+                _best_name="$_name"
+            fi
+        else
+            printf "    %-12s failed (%s)\n" "$_name" "$_code"
+        fi
+    done
+
+    if [ -z "$_best_url" ]; then
+        echo "==> Error: All mirrors failed"
+        return 1
+    fi
+
+    echo "==> Best mirror: $_best_name (${_best_time}s)"
+    echo "==> Downloading $_file..."
+    curl -L --progress-bar -o "$srcdir/$_file" "$_best_url"
+
+    echo "==> Verifying checksum..."
+    echo "$(sha256sum "$srcdir/$_file" | awk '{print $1}')  $_file" | sha256sum -c - || {
+        echo "==> Error: Checksum mismatch"
+        return 1
+    }
+}
 
 package() {
     cd "$srcdir"
