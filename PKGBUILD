@@ -90,6 +90,11 @@ prepare() {
         return 1
     fi
     msg "Checksum OK"
+
+    msg "Extracting..."
+    bsdtar -xf "$srcdir/$_file" -C "$srcdir"
+    rm -f "$srcdir/$_file"
+    rm -f "$srcdir/.BUILDINFO" "$srcdir/.MTREE" "$srcdir/.PKGINFO"
 }
 
 package() {
