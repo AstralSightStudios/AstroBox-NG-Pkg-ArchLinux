@@ -51,10 +51,10 @@ package() {
     install -Dm755 "$PREBUILT_DIR/AstroBox-ng" "$pkgdir/usr/bin/AstroBox-ng"
     
     # Desktop file
-    install -Dm644 "$PREBUILT_DIR/bundle/deb/AstroBox_2.0.0_amd64/data/usr/share/applications/AstroBox.desktop" "$pkgdir/usr/share/applications/AstroBox.desktop"
+    install -Dm644 "$PREBUILT_DIR/bundle/deb/astrobox-ng_2.0.0_amd64/data/usr/share/applications/AstroBox.desktop" "$pkgdir/usr/share/applications/AstroBox.desktop"
     
     # Icon
-    install -Dm644 "$PREBUILT_DIR/../../modules/app/icons/icon.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-NG.png"
+    install -Dm644 "$PREBUILT_DIR/../../modules/app/icons/icon.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-ng.png"
     
     # License
     install -Dm644 "$PREBUILT_DIR/../../../LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
