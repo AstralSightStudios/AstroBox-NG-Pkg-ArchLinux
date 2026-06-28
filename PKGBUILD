@@ -36,7 +36,7 @@ depends=(
 
 # CDN mirror support
 # Usage: MIRROR=ghfast makepkg -s
-# Supported: direct (default), ghfast, ghproxy, ghproxy2, ghgo, ghddl
+# Supported: direct (default), ghfast, ghproxy, ghproxy2, ghproxy3, ghgo, ghddl
 _mirror="${MIRROR:-direct}"
 _base_path="AstralSightStudios/AstroBox-NG/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
 
@@ -46,6 +46,7 @@ case "$_mirror" in
     ghproxy)  _url="https://ghproxy.com/https://github.com/${_base_path}" ;;
     ghproxy2) _url="https://gh-proxy.com/https://github.com/${_base_path}" ;;
     ghgo)     _url="https://ghgo.xyz/https://github.com/${_base_path}" ;;
+    ghproxy3) _url="https://ghproxy.net/https://github.com/${_base_path}" ;;
     ghddl)    _url="https://gh.ddlc.top/https://github.com/${_base_path}" ;;
     *)        _url="https://github.com/${_base_path}" ;;
 esac
