@@ -5,6 +5,7 @@ pkgbase = astrobox-ng
 	url = https://github.com/AstralSightStudios/AstroBox-NG
 	arch = x86_64
 	license = AGPL-3.0
+	makedepends = curl
 	depends = webkit2gtk-4.1
 	depends = gtk3
 	depends = libx11
@@ -29,6 +30,5 @@ pkgbase = astrobox-ng
 	depends = hicolor-icon-theme
 	depends = desktop-file-utils
 	depends = shared-mime-info
-	sha256sums = 52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63
 
 pkgname = astrobox-ng

@@ -34,11 +34,13 @@ depends=(
     'shared-mime-info'
 )
 source=()
-sha256sums=('52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63')
+sha256sums=()
+makedepends=('curl')
 
 prepare() {
     local _base="AstralSightStudios/AstroBox-NG/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
     local _file="AstroBox_${pkgver}_x86_64.pkg.tar.zst"
+    local _expected="52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63"
     local _mirrors=(
         "https://github.com/${_base}|GitHub"
         "https://ghfast.top/https://github.com/${_base}|ghfast"
@@ -60,7 +62,7 @@ prepare() {
         local _code
         _code=$(curl -sI --max-time 5 -o /dev/null -w "%{http_code}" "$_url" 2>/dev/null) || true
         if [[ "$_code" =~ ^(200|301|302) ]]; then
-            printf "    %-12s %ss (%s)\n" "$_name" "$_time" "$_code"
+            printf "    %-12s % 6ss (%s)\n" "$_name" "$_time" "$_code"
             if awk "BEGIN{exit !($_time < $_best_time)}" 2>/dev/null; then
                 _best_time="$_time"
                 _best_url="$_url"
@@ -72,23 +74,26 @@ prepare() {
     done
 
     if [ -z "$_best_url" ]; then
-        echo "==> Error: All mirrors failed"
+        error "All mirrors failed"
         return 1
     fi
 
-    echo "==> Best mirror: $_best_name (${_best_time}s)"
-    echo "==> Downloading $_file..."
+    msg "Best mirror: $_best_name (${_best_time}s)"
+    msg "Downloading $_file..."
     curl -L --progress-bar -o "$srcdir/$_file" "$_best_url"
 
-    echo "==> Verifying checksum..."
-    echo "$(sha256sum "$srcdir/$_file" | awk '{print $1}')  $_file" | sha256sum -c - || {
-        echo "==> Error: Checksum mismatch"
+    msg "Verifying checksum..."
+    local _real
+    _real=$(sha256sum "$srcdir/$_file" | awk '{print $1}')
+    if [ "$_real" != "$_expected" ]; then
+        error "Checksum mismatch: got $_real"
         return 1
-    }
+    fi
+    msg "Checksum OK"
 }
 
 package() {
     cd "$srcdir"
-    rm -f .BUILDINFO .MTREE .PKGINFO
     cp -a . "$pkgdir"
+    rm -f "$pkgdir/.BUILDINFO" "$pkgdir/.MTREE" "$pkgdir/.PKGINFO"
 }
