@@ -34,14 +34,14 @@ depends=(
     'desktop-file-utils'
     'shared-mime-info'
 )
-source=()
-sha256sums=()
+source=("https://github.com/AstralSightStudios/AstroBox-NG/releases/download/v${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst")
+sha256sums=('0a7a9f9d81c6bd2ccf209690bbf03be4cc5c6b2530844b2615290a62cd9c90f2')
 makedepends=('curl')
 
 prepare() {
-    local _base="AstralSightStudios/AstroBox-NG/releases/download/${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
+    local _base="AstralSightStudios/AstroBox-NG/releases/download/v${pkgver}/AstroBox_${pkgver}_x86_64.pkg.tar.zst"
     local _file="AstroBox_${pkgver}_x86_64.pkg.tar.zst"
-    local _expected="52d05bb32d0cd27e01e06e26a4d90434407f90f3237d8bb728f585d3733fab63"
+    local _expected="0a7a9f9d81c6bd2ccf209690bbf03be4cc5c6b2530844b2615290a62cd9c90f2"
     local _mirrors=(
         "https://github.com/${_base}|GitHub"
         "https://ghfast.top/https://github.com/${_base}|ghfast"
