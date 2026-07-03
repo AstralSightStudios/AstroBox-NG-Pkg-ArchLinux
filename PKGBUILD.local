@@ -1,7 +1,7 @@
 # Maintainer: AstralSightStudios <dev@astralsight.studio>
 
 pkgname=astrobox-ng
-pkgver=2.0.0
+pkgver=2.0.1
 pkgrel=1
 pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
 arch=('x86_64')
@@ -66,7 +66,7 @@ package() {
     install -Dm755 AstroBox-ng "$pkgdir/usr/bin/AstroBox-ng"
 
     # Desktop file
-    install -Dm644 bundle/deb/AstroBox_2.0.0_amd64/data/usr/share/applications/AstroBox.desktop "$pkgdir/usr/share/applications/AstroBox.desktop"
+    install -Dm644 bundle/deb/AstroBox_2.0.1_amd64/data/usr/share/applications/AstroBox.desktop "$pkgdir/usr/share/applications/AstroBox.desktop"
 
     # Icon
     install -Dm644 ../../modules/app/icons/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-ng.png"

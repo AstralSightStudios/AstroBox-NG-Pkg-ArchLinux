@@ -1,7 +1,7 @@
 # Maintainer: WaiJade <waijade@outlook.com>
 
 pkgname=astrobox-ng
-pkgver=2.0.0
+pkgver=2.0.1
 pkgrel=1
 pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
 arch=('x86_64')
