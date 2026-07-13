@@ -7,6 +7,17 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 echo "==> AstroBox-NG Arch Linux build"
 echo "    Project root: $PROJECT_ROOT"
 
+# 从 tauri.conf.json 提取版本号
+APP_VERSION=$(grep '"version"' "$PROJECT_ROOT/src-tauri/modules/app/tauri.conf.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/')
+if [ -z "$APP_VERSION" ]; then
+    echo "错误：无法从 tauri.conf.json 提取版本号"
+    exit 1
+fi
+echo "    Version: $APP_VERSION"
+
+# 清理旧的包文件
+rm -f "$SCRIPT_DIR"/astrobox-ng-*.pkg.tar.zst
+
 # 检查参数
 MODE="${1:-full}"
 
@@ -32,8 +43,9 @@ case "$MODE" in
             ln -sf "$PROJECT_ROOT" "$BUILD_DIR/src/AstroBox-NG"
         fi
         
-        # Copy PKGBUILD.local to build directory
+        # Copy PKGBUILD.local to build directory and inject version
         cp "$SCRIPT_DIR/PKGBUILD.local" "$BUILD_DIR/PKGBUILD"
+        sed -i "s/^pkgver=.*/pkgver=${APP_VERSION}/" "$BUILD_DIR/PKGBUILD"
         
         # Build with makepkg
         cd "$BUILD_DIR"
@@ -59,8 +71,9 @@ case "$MODE" in
         # Create source symlink
         ln -sf "$PROJECT_ROOT" "$BUILD_DIR/src/AstroBox-NG"
         
-        # Copy PKGBUILD.prebuilt to build directory
+        # Copy PKGBUILD.prebuilt to build directory and inject version
         cp "$SCRIPT_DIR/PKGBUILD.prebuilt" "$BUILD_DIR/PKGBUILD"
+        sed -i "s/^pkgver=.*/pkgver=${APP_VERSION}/" "$BUILD_DIR/PKGBUILD"
         
         # Build with makepkg
         cd "$BUILD_DIR"

@@ -7,6 +7,7 @@ pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
 arch=('x86_64')
 url="https://github.com/AstralSightStudios/AstroBox-NG"
 license=('AGPL-3.0')
+options=('!debug')
 depends=(
     'webkit2gtk-4.1'
     'gtk3'
@@ -44,7 +45,7 @@ sha256sums=()
 
 pkgver() {
     cd "$srcdir/AstroBox-NG"
-    grep '^version' src-tauri/modules/app/Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/'
+    grep '"version"' src-tauri/modules/app/tauri.conf.json | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/'
 }
 
 prepare() {
@@ -66,7 +67,7 @@ package() {
     install -Dm755 AstroBox-ng "$pkgdir/usr/bin/AstroBox-ng"
 
     # Desktop file
-    install -Dm644 bundle/deb/AstroBox_2.0.1_amd64/data/usr/share/applications/AstroBox.desktop "$pkgdir/usr/share/applications/AstroBox.desktop"
+    install -Dm644 bundle/deb/AstroBox_${pkgver}_amd64/data/usr/share/applications/AstroBox.desktop "$pkgdir/usr/share/applications/AstroBox.desktop"
 
     # Icon
     install -Dm644 ../../modules/app/icons/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-ng.png"
