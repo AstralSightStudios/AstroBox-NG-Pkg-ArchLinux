@@ -37,8 +37,8 @@ depends=(
 makedepends=('curl')
 
 prepare() {
-    local _base="AstralSightStudios/AstroBox-NG/releases/download/v${pkgver}/astrobox-ng-${pkgver}-1-x86_64.pkg.tar.zst"
-    local _file="astrobox-ng-${pkgver}-1-x86_64.pkg.tar.zst"
+    local _base="Searchstars/AstroBox-NG/releases/download/v${pkgver}/AstroBox-${pkgver}-${pkgrel}_x86_64.pkg.tar.zst"
+    local _file="AstroBox-${pkgver}-${pkgrel}_x86_64.pkg.tar.zst"
     local _expected="7575615aea0149045f0290f7e3a80ff4c94d5c907d46efa0408ffafbfae6ea2b"
     local _mirrors=(
         "https://github.com/${_base}|GitHub"

@@ -7,7 +7,6 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 echo "==> AstroBox-NG Arch Linux build"
 echo "    Project root: $PROJECT_ROOT"
 
-# 从 tauri.conf.json 提取版本号
 APP_VERSION=$(grep '"version"' "$PROJECT_ROOT/src-tauri/modules/app/tauri.conf.json" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/')
 if [ -z "$APP_VERSION" ]; then
     echo "错误：无法从 tauri.conf.json 提取版本号"
@@ -15,78 +14,61 @@ if [ -z "$APP_VERSION" ]; then
 fi
 echo "    Version: $APP_VERSION"
 
-# 清理旧的包文件
 rm -f "$SCRIPT_DIR"/astrobox-ng-*.pkg.tar.zst
 
-# 检查参数
-MODE="${1:-full}"
+MODE="${1:-prebuilt}"
 
 case "$MODE" in
-    "full")
-        echo "==> 完整编译模式"
-        # Sync sub-repos (skip if already synced)
-        echo "==> Checking sub-repos..."
-        cd "$PROJECT_ROOT"
-        if [ ! -d "src-tauri/modules/app" ] || [ ! -d "web" ]; then
-            echo "==> Syncing sub-repos..."
-            python3 abtools.py sync
-        else
-            echo "==> Sub-repos already exist, skipping sync..."
-        fi
-        
-        # Create temp build directory
-        BUILD_DIR="$SCRIPT_DIR/build"
-        mkdir -p "$BUILD_DIR/src"
-        
-        # Create source symlink in src directory
-        if [ ! -L "$BUILD_DIR/src/AstroBox-NG" ]; then
-            ln -sf "$PROJECT_ROOT" "$BUILD_DIR/src/AstroBox-NG"
-        fi
-        
-        # Copy PKGBUILD.local to build directory and inject version
-        cp "$SCRIPT_DIR/PKGBUILD.local" "$BUILD_DIR/PKGBUILD"
-        sed -i "s/^pkgver=.*/pkgver=${APP_VERSION}/" "$BUILD_DIR/PKGBUILD"
-        
-        # Build with makepkg
-        cd "$BUILD_DIR"
-        PKGDEST="$SCRIPT_DIR" makepkg -d "${@:2}"
-        ;;
-        
     "prebuilt")
         echo "==> 预编译模式"
-        
-        # 检查预编译目录
+
+        # 查询 AUR 上当前版本的 pkgrel
+        PKGREL=1
+        echo "==> 查询 AUR 确认 pkgrel..."
+        AUR_INFO=$(curl -s "https://aur.archlinux.org/rpc/v5/info?arg[]=astrobox-ng" 2>/dev/null || true)
+        AUR_PKGVER=$(echo "$AUR_INFO" | grep -oP '"Version"\s*:\s*"\K[^"]+' | head -1 || true)
+        if [ -n "$AUR_PKGVER" ]; then
+            AUR_VER=$(echo "$AUR_PKGVER" | grep -oP '^\d+\.\d+\.\d+')
+            AUR_REL=$(echo "$AUR_PKGVER" | grep -oP '\d+\.\d+\.\d+-\K\d+')
+            echo "    AUR 当前: $AUR_VER-$AUR_REL"
+            if [ "$AUR_VER" = "$APP_VERSION" ] && [ -n "$AUR_REL" ]; then
+                PKGREL=$((AUR_REL + 1))
+                echo "    同版本, pkgrel 递增: $AUR_REL -> $PKGREL"
+            fi
+        else
+            echo "    无法查询 AUR, pkgrel 默认 1"
+        fi
+
         PREBUILT_DIR="$PROJECT_ROOT/src-tauri/target/release"
         if [ ! -f "$PREBUILT_DIR/AstroBox-ng" ]; then
             echo "错误：找不到预编译的二进制文件"
-            echo "请先运行完整编译：./build.sh full"
+            echo "请先运行 pnpm tauri build --no-bundle"
             exit 1
         fi
-        
-        # Create temp build directory
+
         BUILD_DIR="$SCRIPT_DIR/build-prebuilt"
         rm -rf "$BUILD_DIR"
         mkdir -p "$BUILD_DIR/src"
-        
-        # Create source symlink
+
         ln -sf "$PROJECT_ROOT" "$BUILD_DIR/src/AstroBox-NG"
-        
-        # Copy PKGBUILD.prebuilt to build directory and inject version
+
         cp "$SCRIPT_DIR/PKGBUILD.prebuilt" "$BUILD_DIR/PKGBUILD"
         sed -i "s/^pkgver=.*/pkgver=${APP_VERSION}/" "$BUILD_DIR/PKGBUILD"
-        
-        # Build with makepkg
+        sed -i "s/^pkgrel=.*/pkgrel=${PKGREL}/" "$BUILD_DIR/PKGBUILD"
+
         cd "$BUILD_DIR"
         PREBUILT_DIR="$PREBUILT_DIR" PKGDEST="$SCRIPT_DIR" makepkg -d -f "${@:2}"
+
+        echo "    pkgrel=$PKGREL"
         ;;
-        
+
     *)
-        echo "用法：$0 {full|prebuilt} [makepkg选项]"
+        echo "用法：$0 {prebuilt} [makepkg选项]"
         echo ""
-        echo "  full      完整编译并打包（默认）"
-        echo "  prebuilt  使用已编译的二进制文件打包（快速测试）"
+        echo "  prebuilt  使用已编译的二进制文件打包"
         exit 1
         ;;
 esac
 
 echo "==> Build complete! Package saved to: $SCRIPT_DIR"
+echo "    Version: ${APP_VERSION}-${PKGREL}"
