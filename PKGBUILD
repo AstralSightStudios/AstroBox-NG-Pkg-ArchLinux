@@ -1,7 +1,7 @@
 # Maintainer: WaiJade <waijade@outlook.com>
 
 pkgname=astrobox-ng
-pkgver=2.1.0
+pkgver=2.2.0
 pkgrel=1
 pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
 arch=('x86_64')
@@ -37,9 +37,9 @@ depends=(
 makedepends=('curl')
 
 prepare() {
-    local _base="Searchstars/AstroBox-NG/releases/download/v${pkgver}/AstroBox-${pkgver}-${pkgrel}_x86_64.pkg.tar.zst"
+    local _base="AstralSightStudios/AstroBox-NG/releases/download/v${pkgver}/AstroBox-${pkgver}-${pkgrel}_x86_64.pkg.tar.zst"
     local _file="AstroBox-${pkgver}-${pkgrel}_x86_64.pkg.tar.zst"
-    local _expected="f249ced4664437ad6b3b0a391d7a8d951de51b758e591a0b1c92215d262bfc8c"
+    local _expected="c0238e7967e521d56462233fa804b3b4da058a829be192b4d0397db755402c53"
     local _mirrors=(
         "https://github.com/${_base}|GitHub"
         "https://ghfast.top/https://github.com/${_base}|ghfast"
