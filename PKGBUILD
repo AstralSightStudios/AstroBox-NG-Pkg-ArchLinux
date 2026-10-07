@@ -9,30 +9,38 @@ url="https://github.com/AstralSightStudios/AstroBox-NG"
 license=('AGPL-3.0')
 options=('!debug')
 depends=(
-    'webkit2gtk-4.1'
-    'gtk3'
+    # CEF（Chromium）运行时
+    'nss'
+    'nspr'
+    'alsa-lib'
+    'libcups'
+    'mesa'
+    'at-spi2-core'
     'libx11'
+    'libxcb'
+    'libxext'
+    'libxfixes'
+    'libxdamage'
+    'libxcomposite'
+    'libxrandr'
+    'libxkbcommon'
+    'pango'
+    'cairo'
+    'gdk-pixbuf2'
+    'expat'
+    # 应用本身（GTK 文件对话框、蓝牙、单实例）
+    'gtk3'
+    'glib2'
+    'dbus'
+    'systemd-libs'
     'gcc-libs'
     'glibc'
-    'zlib'
-    'bzip2'
-    'libxcb'
-    'libxkbcommon'
-    'dbus'
-    'libsecret'
-    'libsoup3'
-    'gstreamer'
-    'gst-plugins-base'
-    'libepoxy'
-    'atk'
-    'at-spi2-core'
-    'cairo'
-    'pango'
-    'gdk-pixbuf2'
-    'harfbuzz'
     'hicolor-icon-theme'
     'desktop-file-utils'
     'shared-mime-info'
+)
+optdepends=(
+    'sqlite: migrate settings and sign-in state from WebKitGTK-based releases'
 )
 makedepends=('curl')
 

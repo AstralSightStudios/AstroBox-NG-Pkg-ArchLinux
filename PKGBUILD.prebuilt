@@ -2,7 +2,7 @@
 # 使用预编译二进制文件打包（跳过编译）
 
 pkgname=astrobox-ng
-pkgver=2.1.0
+pkgver=2.2.0
 pkgrel=1
 pkgdesc="AstroBox is a leading tool for managing and extending wearable devices"
 arch=('x86_64')
@@ -10,30 +10,38 @@ url="https://github.com/AstralSightStudios/AstroBox-NG"
 license=('AGPL-3.0')
 options=('!debug')
 depends=(
-    'webkit2gtk-4.1'
-    'gtk3'
+    # CEF（Chromium）运行时
+    'nss'
+    'nspr'
+    'alsa-lib'
+    'libcups'
+    'mesa'
+    'at-spi2-core'
     'libx11'
+    'libxcb'
+    'libxext'
+    'libxfixes'
+    'libxdamage'
+    'libxcomposite'
+    'libxrandr'
+    'libxkbcommon'
+    'pango'
+    'cairo'
+    'gdk-pixbuf2'
+    'expat'
+    # 应用本身（GTK 文件对话框、蓝牙、单实例）
+    'gtk3'
+    'glib2'
+    'dbus'
+    'systemd-libs'
     'gcc-libs'
     'glibc'
-    'zlib'
-    'bzip2'
-    'libxcb'
-    'libxkbcommon'
-    'dbus'
-    'libsecret'
-    'libsoup3'
-    'gstreamer'
-    'gst-plugins-base'
-    'libepoxy'
-    'atk'
-    'at-spi2-core'
-    'cairo'
-    'pango'
-    'gdk-pixbuf2'
-    'harfbuzz'
     'hicolor-icon-theme'
     'desktop-file-utils'
     'shared-mime-info'
+)
+optdepends=(
+    'sqlite: migrate settings and sign-in state from WebKitGTK-based releases'
 )
 source=()
 sha256sums=()
@@ -50,9 +58,30 @@ package() {
     
     # Binary
     install -Dm755 "$PREBUILT_DIR/AstroBox-ng" "$pkgdir/usr/bin/AstroBox-ng"
+
+    # CEF（Chromium）运行时：二进制的 rpath 指向 /usr/lib/AstroBox-ng
+    install -dm755 "$pkgdir/usr/lib/AstroBox-ng"
+    cp -r --no-preserve=ownership "$PREBUILT_DIR/../cef-runtime/." "$pkgdir/usr/lib/AstroBox-ng/"
     
     # Desktop file
-    install -Dm644 "$PREBUILT_DIR/bundle/deb/AstroBox_${pkgver}_amd64/data/usr/share/applications/AstroBox.desktop" "$pkgdir/usr/share/applications/AstroBox.desktop"
+    local desktop_src
+    desktop_src=$(find "$PREBUILT_DIR/bundle" -name "AstroBox.desktop" 2>/dev/null | head -1)
+    if [ -n "$desktop_src" ] && [ -f "$desktop_src" ]; then
+        install -Dm644 "$desktop_src" "$pkgdir/usr/share/applications/AstroBox.desktop"
+    else
+        install -dm755 "$pkgdir/usr/share/applications"
+        cat > "$pkgdir/usr/share/applications/AstroBox.desktop" << 'EOF_DESKTOP'
+[Desktop Entry]
+Categories=Utility;
+Comment=AstroBox - Wearable Device Toolbox
+Exec=AstroBox-ng %U
+Icon=AstroBox-ng
+Name=AstroBox
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/astrobox;
+EOF_DESKTOP
+    fi
     
     # Icon
     install -Dm644 "$PREBUILT_DIR/../../modules/app/icons/icon.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/AstroBox-ng.png"

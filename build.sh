@@ -46,6 +46,9 @@ case "$MODE" in
             exit 1
         fi
 
+        # Linux 用自带的 CEF（Chromium）替代 WebKitGTK，把运行时整理到 target/cef-runtime。
+        bash "$PROJECT_ROOT/src-tauri/modules/app/linux/stage-cef-runtime.sh"
+
         BUILD_DIR="$SCRIPT_DIR/build-prebuilt"
         rm -rf "$BUILD_DIR"
         mkdir -p "$BUILD_DIR/src"
